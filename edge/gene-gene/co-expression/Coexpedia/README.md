@@ -12,3 +12,4 @@ Our script aims to:
 
 1. Combine all coexpedia data from all GEO Accessions
 1. Reduce the combined data to a compact dataset
+    - The compact dataset contains only two columns, with each row representing 2 co-expressed genes
