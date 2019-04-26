@@ -27,9 +27,7 @@ We used BioMart of the Ensembl project to fetch the gene IDs and coordinates. Be
         - Transcript end (bp)
         - Transcription start site (TSS)
 	
-![](./Ensembl_Genes_2018-12-06_18-17-24.png)
-
-
+![](./biomart_2018-12-06_18-17-24.png)
 
 ### 1.2 Download
 
