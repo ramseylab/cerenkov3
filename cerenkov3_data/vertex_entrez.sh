@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # gene2ensembl
 
 wget 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2ensembl.gz'
