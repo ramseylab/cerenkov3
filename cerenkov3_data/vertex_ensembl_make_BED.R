@@ -28,14 +28,14 @@ ensembl_df %>%
 	select(chromosome, promoter_start, promoter_end, gene_name, ensembl_gene_id, entrez_gene_id, strand) %>%
 	mutate(entrez_gene_id = replace_na(entrez_gene_id, ".")) %>%
 	distinct(.keep_all = TRUE) %>% 
-	write.table(paste(ensembl_dir, "p2_ensembl_gene_promoter.bed", sep=""), sep = "\t", 
+	write.table(paste(ensembl_dir, "ensembl_gene_promoter.bed", sep=""), sep = "\t", 
 				quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 ensembl_df %>% 
 	select(chromosome, TSS_start, TSS_end, gene_name, ensembl_gene_id, entrez_gene_id, strand) %>%
 	mutate(entrez_gene_id = replace_na(entrez_gene_id, ".")) %>%
 	distinct(.keep_all = TRUE) %>% 
-	write.table(paste(ensembl_dir, "p2_ensembl_gene_TSS.bed", sep=""), sep = "\t", 
+	write.table(paste(ensembl_dir, "ensembl_gene_TSS.bed", sep=""), sep = "\t", 
 				quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 ## save "chromosome", "transcript_start", "transcript_end", "gene_name", "ensembl_gene_id", "entrez_gene_id" and "strand" to a BED file, `ensembl_gene_transcript.bed`

@@ -61,4 +61,4 @@ ensembl_gene_df <- ensembl_gene_df %>% mutate(TSS_start = TSS - 1,
 
 ensembl_gene_df %>% 
 	select(-TSS) %>%  # Delete original `TSS` column				
-	write_tsv(paste(ensembl_dir, "p1_ensembl_gene_df.tsv", sep=""))  # Save the final dataframe
+	write_tsv(paste(ensembl_dir, "ensembl_gene_df.tsv", sep=""))  # Save the final dataframe
