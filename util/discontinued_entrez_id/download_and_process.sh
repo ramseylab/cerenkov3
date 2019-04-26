@@ -1,1 +1,0 @@
-curl "ftp://ftp.ncbi.nih.gov/gene/DATA/gene_history.gz" | gunzip -c | cut -f 3,4 > Entrez_discontinued_id.tsv
