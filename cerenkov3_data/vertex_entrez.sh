@@ -38,3 +38,7 @@ mv HGNC_custom.txt ./vertex/gene/Entrez/
 # Mapping
 
 python3 vertex_entrez.py
+
+# Saving BED files
+
+Rscript vertex_entrez_make_BED.R
