@@ -14,11 +14,11 @@ snp_bed="./vertex/SNP/OSU18/osu18_SNP.bed"
 fd_genome_dir="./edge/snp-gene/Chromatin-Interaction/4DGenome"
 ensembl_dir="./vertex/gene/Ensembl"
 
-bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorA.bed -b ${snp_bed} -wo > ${fd_genome_dir}/InteractorA_SNP.bed
-bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorB.bed -b ${snp_bed} -wo > ${fd_genome_dir}/InteractorB_SNP.bed
+bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorA.bed -b ${snp_bed} -wo > ${fd_genome_dir}/4DGenome_InteractorA_SNP.bed
+bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorB.bed -b ${snp_bed} -wo > ${fd_genome_dir}/4DGenome_InteractorB_SNP.bed
 
-bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorA.bed -b ${ensembl_dir}/ensembl_gene_TSS.bed -wo > ${fd_genome_dir}/InteractorA_TSS.bed
-bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorB.bed -b ${ensembl_dir}/ensembl_gene_TSS.bed -wo > ${fd_genome_dir}/InteractorB_TSS.bed
+bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorA.bed -b ${ensembl_dir}/p2_Ensembl_TSS.bed -wo > ${fd_genome_dir}/4DGenome_InteractorA_Ensembl_TSS.bed
+bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorB.bed -b ${ensembl_dir}/p2_Ensembl_TSS.bed -wo > ${fd_genome_dir}/4DGenome_InteractorB_Ensembl_TSS.bed
 
-bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorA.bed -b ${ensembl_dir}/ensembl_gene_promoter.bed -wo > ${fd_genome_dir}/InteractorA_promoter.bed
-bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorB.bed -b ${ensembl_dir}/ensembl_gene_promoter.bed -wo > ${fd_genome_dir}/InteractorB_promoter.bed
+bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorA.bed -b ${ensembl_dir}/p2_Ensembl_promoter.bed -wo > ${fd_genome_dir}/4DGenome_InteractorA_Ensembl_promoter.bed
+bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorB.bed -b ${ensembl_dir}/p2_Ensembl_promoter.bed -wo > ${fd_genome_dir}/4DGenome_InteractorB_Ensembl_promoter.bed
