@@ -14,7 +14,6 @@ ensembl_dir <- "./vertex/gene/Ensembl/"
 
 ensembl_gene_df <- read_tsv(paste(ensembl_dir, "mart_export.txt", sep=""), col_types=cols(
 	`Gene stable ID` = col_character(),
-	`EntrezGene ID` = col_character(),
 	Strand = col_integer(),
 	`Chromosome/scaffold name` = col_character(),
 	`Transcription start site (TSS)` = col_integer(),
@@ -27,7 +26,6 @@ ensembl_gene_df <- read_tsv(paste(ensembl_dir, "mart_export.txt", sep=""), col_t
 # Rename columns
 ensembl_gene_df <- ensembl_gene_df %>% rename(
 	ensembl_gene_id = `Gene stable ID`,
-	entrez_gene_id = `EntrezGene ID`,
 	gene_name = `Gene name`,
 	strand = Strand,
 	chromosome = `Chromosome/scaffold name`,
@@ -61,4 +59,4 @@ ensembl_gene_df <- ensembl_gene_df %>% mutate(TSS_start = TSS - 1,
 
 ensembl_gene_df %>% 
 	select(-TSS) %>%  # Delete original `TSS` column				
-	write_tsv(paste(ensembl_dir, "ensembl_gene_df.tsv", sep=""))  # Save the final dataframe
+	write_tsv(paste(ensembl_dir, "p1_Ensembl.tsv", sep=""))  # Save the final dataframe

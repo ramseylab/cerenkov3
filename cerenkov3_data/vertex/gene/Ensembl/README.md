@@ -8,7 +8,7 @@ We used BioMart of the Ensembl project to fetch the gene IDs and coordinates. Be
 
 ### 1.1 Query
 
-- [BioMart Page](http://grch37.ensembl.org/biomart/martview/ab5aa16c0090f93c4a06be76fd30ed9e?VIRTUALSCHEMANAME=default&ATTRIBUTES=hsapiens_gene_ensembl.default.feature_page.chromosome_name|hsapiens_gene_ensembl.default.feature_page.strand|hsapiens_gene_ensembl.default.feature_page.ensembl_gene_id|hsapiens_gene_ensembl.default.feature_page.external_gene_name|hsapiens_gene_ensembl.default.feature_page.entrezgene|hsapiens_gene_ensembl.default.feature_page.start_position|hsapiens_gene_ensembl.default.feature_page.end_position|hsapiens_gene_ensembl.default.feature_page.ensembl_transcript_id|hsapiens_gene_ensembl.default.feature_page.external_transcript_name|hsapiens_gene_ensembl.default.feature_page.transcript_start|hsapiens_gene_ensembl.default.feature_page.transcript_end|hsapiens_gene_ensembl.default.feature_page.transcription_start_site&FILTERS=hsapiens_gene_ensembl.default.filters.chromosome_name."1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y"&VISIBLEPANEL=resultspanel)
+- [BioMart Page](http://grch37.ensembl.org/biomart/martview/ab5aa16c0090f93c4a06be76fd30ed9e?VIRTUALSCHEMANAME=default&ATTRIBUTES=hsapiens_gene_ensembl.default.feature_page.chromosome_name|hsapiens_gene_ensembl.default.feature_page.strand|hsapiens_gene_ensembl.default.feature_page.ensembl_gene_id|hsapiens_gene_ensembl.default.feature_page.external_gene_name|hsapiens_gene_ensembl.default.feature_page.start_position|hsapiens_gene_ensembl.default.feature_page.end_position|hsapiens_gene_ensembl.default.feature_page.ensembl_transcript_id|hsapiens_gene_ensembl.default.feature_page.external_transcript_name|hsapiens_gene_ensembl.default.feature_page.transcript_start|hsapiens_gene_ensembl.default.feature_page.transcript_end|hsapiens_gene_ensembl.default.feature_page.transcription_start_site&FILTERS=hsapiens_gene_ensembl.default.filters.chromosome_name."1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y"&VISIBLEPANEL=resultspanel)
 - Query criteria:
     - Dataset: Human genes (GRCh37.p13)
     - Filters:
@@ -18,7 +18,6 @@ We used BioMart of the Ensembl project to fetch the gene IDs and coordinates. Be
         - Strand
         - Gene stable ID
         - Gene name
-        - EntrezGene ID
         - Gene start (bp)
         - Gene end (bp)
         - Transcript stable ID
@@ -26,8 +25,6 @@ We used BioMart of the Ensembl project to fetch the gene IDs and coordinates. Be
         - Transcript start (bp)
         - Transcript end (bp)
         - Transcription start site (TSS)
-	
-![](./biomart_2018-12-06_18-17-24.png)
 
 ### 1.2 Download
 
@@ -40,8 +37,7 @@ We will use the wget+xml method to download the results. See:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Query>
-<Query  virtualSchemaName = "default" formatter = "TSV" header = "1" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" >
-			
+<Query  virtualSchemaName = "default" formatter = "TSV" header = "1" uniqueRows = "0" count = "" datasetConfigVersion = "0.6" >	
 	<Dataset name = "hsapiens_gene_ensembl" interface = "default" >
 		<Filter name = "chromosome_name" value = "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y"/>
 		<Attribute name = "chromosome_name" />
@@ -51,7 +47,6 @@ We will use the wget+xml method to download the results. See:
 		<Attribute name = "strand" />
 		<Attribute name = "ensembl_gene_id" />
 		<Attribute name = "external_gene_name" />
-		<Attribute name = "entrezgene" />
 		<Attribute name = "start_position" />
 		<Attribute name = "end_position" />
 		<Attribute name = "ensembl_transcript_id" />
@@ -60,8 +55,8 @@ We will use the wget+xml method to download the results. See:
 </Query>
 ```
 
-- [URL for the query results](http://grch37.ensembl.org/biomart/martservice/results?query=%3C?xml%20version=%221.0%22%20encoding=%22UTF-8%22?%3E%3C!DOCTYPE%20Query%3E%3CQuery%20virtualSchemaName=%22default%22%20formatter=%22TSV%22%20header=%221%22%20uniqueRows=%220%22%20count=%22%22%20datasetConfigVersion=%220.6%22%3E%3CDataset%20name=%22hsapiens_gene_ensembl%22%20interface=%22default%22%3E%3CFilter%20name=%22chromosome_name%22%20value=%221,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y%22/%3E%3CAttribute%20name=%22chromosome_name%22/%3E%3CAttribute%20name=%22transcript_start%22/%3E%3CAttribute%20name=%22transcript_end%22/%3E%3CAttribute%20name=%22transcription_start_site%22/%3E%3CAttribute%20name=%22strand%22/%3E%3CAttribute%20name=%22ensembl_gene_id%22/%3E%3CAttribute%20name=%22external_gene_name%22/%3E%3CAttribute%20name=%22entrezgene%22/%3E%3CAttribute%20name=%22start_position%22/%3E%3CAttribute%20name=%22end_position%22/%3E%3CAttribute%20name=%22ensembl_transcript_id%22/%3E%3CAttribute%20name=%22external_transcript_name%22/%3E%3C/Dataset%3E%3C/Query%3E)
-- wget command: `wget -O mart_export.txt 'http://grch37.ensembl.org/biomart/martservice/results?query=<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Query><Query  virtualSchemaName="default" formatter="TSV" header="1" uniqueRows="0" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Filter name="chromosome_name" value="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y"/><Attribute name="chromosome_name"/><Attribute name="transcript_start"/><Attribute name="transcript_end"/><Attribute name="transcription_start_site"/><Attribute name="strand"/><Attribute name="ensembl_gene_id"/><Attribute name="external_gene_name"/><Attribute name="entrezgene"/><Attribute name="start_position"/><Attribute name="end_position"/><Attribute name="ensembl_transcript_id"/><Attribute name="external_transcript_name"/></Dataset></Query>'`
+- [URL for the query results](http://grch37.ensembl.org/biomart/martservice/results?query=%3C?xml%20version=%221.0%22%20encoding=%22UTF-8%22?%3E%3C!DOCTYPE%20Query%3E%3CQuery%20virtualSchemaName=%22default%22%20formatter=%22TSV%22%20header=%221%22%20uniqueRows=%220%22%20count=%22%22%20datasetConfigVersion=%220.6%22%3E%3CDataset%20name=%22hsapiens_gene_ensembl%22%20interface=%22default%22%3E%3CFilter%20name=%22chromosome_name%22%20value=%221,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y%22/%3E%3CAttribute%20name=%22chromosome_name%22/%3E%3CAttribute%20name=%22transcript_start%22/%3E%3CAttribute%20name=%22transcript_end%22/%3E%3CAttribute%20name=%22transcription_start_site%22/%3E%3CAttribute%20name=%22strand%22/%3E%3CAttribute%20name=%22ensembl_gene_id%22/%3E%3CAttribute%20name=%22external_gene_name%22/%3E%3CAttribute%20name=%22start_position%22/%3E%3CAttribute%20name=%22end_position%22/%3E%3CAttribute%20name=%22ensembl_transcript_id%22/%3E%3CAttribute%20name=%22external_transcript_name%22/%3E%3C/Dataset%3E%3C/Query%3E)
+- wget command: `wget -O mart_export.txt 'http://grch37.ensembl.org/biomart/martservice/results?query=<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE Query><Query  virtualSchemaName="default" formatter="TSV" header="1" uniqueRows="0" count="" datasetConfigVersion="0.6"><Dataset name="hsapiens_gene_ensembl" interface="default"><Filter name="chromosome_name" value="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,X,Y"/><Attribute name="chromosome_name"/><Attribute name="transcript_start"/><Attribute name="transcript_end"/><Attribute name="transcription_start_site"/><Attribute name="strand"/><Attribute name="ensembl_gene_id"/><Attribute name="external_gene_name"/><Attribute name="start_position"/><Attribute name="end_position"/><Attribute name="ensembl_transcript_id"/><Attribute name="external_transcript_name"/></Dataset></Query>'`
 - Filename: `mart_export.txt` (TSV format)
 
 ### 1.3 Notes on the downloaded file
@@ -132,7 +127,7 @@ We have 2 R scripts here:
     4. save the revised dataframe to a TSV file, `p1_ensembl_gene_df.tsv`
 1. `p2_make_BED.R`, aiming to
     1. use `p1_ensembl_gene_df.tsv` as input
-    2. save "chromosome", "promoter_start", "promoter_end", "gene_name", "ensembl_gene_id", "entrez_gene_id" and "strand" to a BED file, `ensembl_gene_promoter.bed`
+    2. save "chromosome", "promoter_start", "promoter_end", "gene_name", "ensembl_gene_id" and "strand" to a BED file, `ensembl_gene_promoter.bed`
         - You always have `transcript_start < transcript_end`, `gene_start < gene_end` and `TSS_start + 1 == TSS_end`
         - If strand == +1, define:
             - promoter_start = TSS_start - 2000, and 
@@ -140,7 +135,7 @@ We have 2 R scripts here:
         - If strand == -1, define:
             - promoter_start = TSS_start - 500, and 
             - promoter_end = TSS_end + 2000 (bigger coordinates mean upstream)
-    3. save "chromosome", "TSS_start", "TSS_end", "gene_name", "ensembl_gene_id", "entrez_gene_id" and "strand" to a BED file, `ensembl_gene_TSS.bed`
+    3. save "chromosome", "TSS_start", "TSS_end", "gene_name", "ensembl_gene_id" and "strand" to a BED file, `ensembl_gene_TSS.bed`
     4. Note: BED format is not strictly followed here.
 
 Further we want to draw edges between SNPs and genes (through its TSS/promoter). If a SNP resides in `region_A` and a TSS/promoter in `region_B` and these 2 regions are proved interacted (e.g. from 4DGenome data), we can draw an edge between the SNP and the gene whose TSS/promoter is invovled in the interaction.
