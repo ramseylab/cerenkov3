@@ -144,7 +144,6 @@ if __name__ == "__main__":
     grch37_df.to_csv(os.path.join(entrez_dir, "p1_Ensembl_x_Entrez_grch37_biomart.tsv"), sep="\t", header=True, index=False)
     grch38_df.to_csv(os.path.join(entrez_dir, "p1_Ensembl_x_Entrez_grch38_biomart.tsv"), sep="\t", header=True, index=False)
 
-    merged_df = pd.concat([grch37_df, grch38_df, g2e_df], axis=0, sort=True).drop_duplicates()
-    merged_df = filter_dei(merged_df, "Entrez_Gene_ID")
-
-    merged_df.to_csv(os.path.join(entrez_dir, "p2_Ensembl_x_Entrez.tsv"), sep="\t", header=True, index=False)
+    ensembl_entrez_map = pd.concat([grch37_df, grch38_df, g2e_df], axis=0, sort=True).drop_duplicates()
+    ensembl_entrez_map = filter_dei(ensembl_entrez_map, "Entrez_Gene_ID")
+    ensembl_entrez_map.to_csv(os.path.join(entrez_dir, "p2_Ensembl_x_Entrez.tsv"), sep="\t", header=True, index=False)
