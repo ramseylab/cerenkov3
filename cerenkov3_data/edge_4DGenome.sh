@@ -22,3 +22,5 @@ bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorB.bed -b ${ensembl_dir
 
 bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorA.bed -b ${ensembl_dir}/p2_Ensembl_promoter.bed -wo > ${fd_genome_dir}/4DGenome_InteractorA_Ensembl_promoter.bed
 bedtools intersect -a ${fd_genome_dir}/4DGenome_InteractorB.bed -b ${ensembl_dir}/p2_Ensembl_promoter.bed -wo > ${fd_genome_dir}/4DGenome_InteractorB_Ensembl_promoter.bed
+
+python3 edge_4DGenome.py
