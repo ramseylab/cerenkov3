@@ -29,3 +29,9 @@ Our SNP locations are also 0-based, so no extra care is needed before matching.
 As illustrated above, if a SNP and a TSS/promoter correspondingly reside in 2 regions that are proved interacted from 4DGenome data, we can draw an edge between the SNP and the gene whose TSS/promoter is invovled in the interaction. E.g. `s1`-`g1`, `s2`-`g2`, `s3`-`g3`, `s4`-`g4` in the above figure.
 
 The relationship of residence will be tested by [`bedtools intersect` CLI](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html).
+
+## SNP-SNP edges
+
+Similarly, we can draw an edge between 2 SNPs if they reside in 2 interacted regions. 
+
+Note that the SNP-SNP edges will be saved to another folder, `cerenkov3/cerenkov3_data/edge/snp-snp/Chromatin-Interaction/4DGenome`.
