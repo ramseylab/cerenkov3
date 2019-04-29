@@ -4,14 +4,14 @@ The following 2 BED files,
 - 4DGenome_InteractorA_SNP.bed and 
 - 4DGenome_InteractorB_SNP.bed 
 
-have 10 columns each (without a header row):
+have 9 columns each (without a header row):
 
-| 0              | 1                | 2              | 3              | 4       | 5         | 6         | 7          | 8         | 9       |
-| Interactor_Chr | Interactor_Start | Interactor_End | Interaction_ID | SNP_Chr | SNP_Start | SNP_End   | SNP_ID     | SNP_Label | Overlap |
-|----------------|------------------|----------------|----------------|---------|-----------|-----------|------------|-----------|---------|
-| chr7           | 155604229        | 155606229      | 18695675_1     | chr7    | 155604940 | 155604941 | rs9333594  | 1         | 1       |
-| chr20          | 57456862         | 57471567       | 24413736_155   | chr20   | 57458103  | 57458104  | rs60865276 | 0         | 1       |
-| chr20          | 57456862         | 57471567       | 24413736_155   | chr20   | 57465570  | 57465571  | rs6123837  | 1         | 1       |
+| 0              | 1                | 2              | 3              | 4       | 5         | 6         | 7          | 8       |
+| Interactor_Chr | Interactor_Start | Interactor_End | Interaction_ID | SNP_Chr | SNP_Start | SNP_End   | SNP_ID     | Overlap |
+|----------------|------------------|----------------|----------------|---------|-----------|-----------|------------|---------|
+| chr7           | 155604229        | 155606229      | 18695675_1     | chr7    | 155604940 | 155604941 | rs9333594  | 1       |
+| chr20          | 57456862         | 57471567       | 24413736_155   | chr20   | 57458103  | 57458104  | rs60865276 | 1       |
+| chr20          | 57456862         | 57471567       | 24413736_155   | chr20   | 57465570  | 57465571  | rs6123837  | 1       |
 
 ==========================
 
