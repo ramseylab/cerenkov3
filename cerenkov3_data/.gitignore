@@ -9,5 +9,7 @@ __pycache__/
 # Project-specific
 *.txt
 *.tsv
+*.tsv#
 *.bed
 *.edgelist
+*.zip
