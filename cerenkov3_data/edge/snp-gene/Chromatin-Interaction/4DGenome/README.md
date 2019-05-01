@@ -26,9 +26,29 @@ Our SNP locations are also 0-based, so no extra care is needed before matching.
 
 ![](./4DGenome_edges.png)
 
-As illustrated above, if a SNP and a TSS/promoter correspondingly reside in 2 regions that are proved interacted from 4DGenome data, we can draw an edge between the SNP and the gene whose TSS/promoter is invovled in the interaction. E.g. `s1`-`g1`, `s2`-`g2`, `s3`-`g3`, `s4`-`g4` in the above figure.
+As illustrated above, if a SNP and a TSS/promoter correspondingly reside in, or overlap with, 2 regions that are proved interacted from 4DGenome data, we can draw an edge between the SNP and the gene whose TSS/promoter is invovled in the interaction. E.g. `s`-`x`, `s`-`y` and `s`-`z` in the above figure.
 
-The relationship of residence will be tested by [`bedtools intersect` CLI](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html).
+The relationship of residence/overlap will be tested by [`bedtools intersect` CLI](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html).
+
+### Possible SNP-gene edge exclusion based on pathway media
+
+Based on our definition of promoters, if a gene's TSS resides in a 4DGenome region, certainly its promoter will overlap with that given region. Therefore there would be 2 weights, $w_{\text{TSS}}$ and $w_{\text{promoter}}$ for any snp-gene edge ending at this gene.
+
+If you consider $w_{\text{promoter}}$ redundant for such edges in this case (thus change the interpretation of these weights), you may want to delete such weight directly. However, pay attension to the following scenario:
+
+![](./4DGenome_edges_promoter_vs_tss.png)
+
+Note that in our application, we will output two $s$-$x$ intermediate edges, one in a SNP-TSS edge list, the other in a SNP-promoter one. (Then assign weights to those edge lists.) If you simply delete the $s$-$x$ in the SNP-promoter edge list, you will miss the promoter-overlapping association built through `Region A` to `Region B2`. The correct way is to delete the edges of the same pathway media. In the above scenario, the $s$-$x$ edges can be built through 3 pathways:
+
+- `A`-TSS-`B1`
+- `A`-Promoter-`B1`
+- `A`-Promoter-`B2`
+
+You can consider `A`-Promoter-`B1` pathway redundant in this scenario, but even with that pathway eliminated, you'll still have 2 $s$-$x$ edges (in 2 edge lists correspondingly). 
+
+However, if there is no such `Region B2`, you'll end with only one $s$-$x$ edges (in the SNP-TSS edge list).
+
+Note: we do not perform such elimination in our application for now but we may try in the future.
 
 ## SNP-SNP edges
 
