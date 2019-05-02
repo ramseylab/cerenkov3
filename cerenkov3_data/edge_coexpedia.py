@@ -16,13 +16,13 @@ def read_coexpedia_dfms(_dir):
 
 
 if __name__ == "__main__":
-    hsa_dir = get_path("edge/gene-gene/co-expression/Coexpedia/Hsa")
-    dfms = read_coexpedia_dfms(hsa_dir)
+    input_dir = get_path("resource/Coexpedia/Hsa")
+    dfms = read_coexpedia_dfms(input_dir)
     
-    coexp_dir = get_path("edge/gene-gene/co-expression/Coexpedia")
+    output_dir = get_path("edge/gene-gene/co-expression")
 
     merged_dfm = pd.concat(dfms, axis=0)
-    merged_dfm.to_csv(os.path.join(coexp_dir, "p1_merged_coexpedia.tsv"), sep="\t", index=False)
+    merged_dfm.to_csv(os.path.join(output_dir, "coexpedia_p1_merged.tsv"), sep="\t", index=False)
 
     reduced_dfm = merged_dfm.loc[:, ["Gene_A", "Gene_B"]].drop_duplicates().sort_values(by=["Gene_A", "Gene_B"])
-    reduced_dfm.to_csv(os.path.join(coexp_dir, "p2_reduced_coexpedia.tsv"), sep="\t", index=False)
+    reduced_dfm.to_csv(os.path.join(output_dir, "coexpedia.edgelist"), sep="\t", index=False, header=False)
