@@ -118,25 +118,22 @@ ensembl_gene_df %>% filter(.$transcript_end != .$gene_end)
 
 ## 2. Data Processing
 
-We have 2 R scripts here:
+Our R script aims to:
 
-1. `p1_preprocess.R`, aiming to
-    1. rename the columns of `mart_export.txt`
-    2. since Ensembl uses 1-based coordinate system while we use 0-based, revise `TSS`, `gene_start` and `transcript_start` columns
-    3. add "chr" prefix to "chromosome" column, e.g. "1" => "chr1"
-    4. save the revised dataframe to a TSV file, `p1_ensembl_gene_df.tsv`
-1. `p2_make_BED.R`, aiming to
-    1. use `p1_ensembl_gene_df.tsv` as input
-    2. save "chromosome", "promoter_start", "promoter_end", "gene_name", "ensembl_gene_id" and "strand" to a BED file, `ensembl_gene_promoter.bed`
-        - You always have `transcript_start < transcript_end`, `gene_start < gene_end` and `TSS_start + 1 == TSS_end`
-        - If strand == +1, define:
-            - promoter_start = TSS_start - 2000, and 
-            - promoter_end = TSS_end + 500 (smaller coordinates mean upstream)
-        - If strand == -1, define:
-            - promoter_start = TSS_start - 500, and 
-            - promoter_end = TSS_end + 2000 (bigger coordinates mean upstream)
-    3. save "chromosome", "TSS_start", "TSS_end", "gene_name", "ensembl_gene_id" and "strand" to a BED file, `ensembl_gene_TSS.bed`
-    4. Note: BED format is not strictly followed here.
+1. read `mart_export.txt` and rename its columns
+2. since Ensembl uses 1-based coordinate system while we use 0-based, revise `TSS`, `gene_start` and `transcript_start` columns
+3. add "chr" prefix to "chromosome" column, e.g. "1" => "chr1"
+4. save the revised dataframe to a TSV file, `p1_ensembl_gene_df.tsv`
+5. save "chromosome", "promoter_start", "promoter_end", "gene_name", "ensembl_gene_id" and "strand" to a BED file, `Ensembl_gene_promoter.bed`
+	- You always have `transcript_start < transcript_end`, `gene_start < gene_end` and `TSS_start + 1 == TSS_end`
+	- If strand == +1, define:
+		- promoter_start = TSS_start - 2000, and 
+		- promoter_end = TSS_end + 500 (smaller coordinates mean upstream)
+	- If strand == -1, define:
+		- promoter_start = TSS_start - 500, and 
+		- promoter_end = TSS_end + 2000 (bigger coordinates mean upstream)
+6. save "chromosome", "TSS_start", "TSS_end", "gene_name", "ensembl_gene_id" and "strand" to a BED file, `Ensembl_gene_TSS.bed`
+7. Note: BED format is not strictly followed here.
 
 Further we want to draw edges between SNPs and genes (through its TSS/promoter). If a SNP resides in `region_A` and a TSS/promoter in `region_B` and these 2 regions are proved interacted (e.g. from 4DGenome data), we can draw an edge between the SNP and the gene whose TSS/promoter is invovled in the interaction.
 
