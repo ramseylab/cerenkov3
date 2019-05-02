@@ -11,6 +11,6 @@ else
     mv mart_export.txt ${DIRECTORY}
 fi
 
-Rscript vertex_ensembl_preprocess.R
+Rscript vertex_ensembl.R
 
 echo "[Ensembl] done!"
