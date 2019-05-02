@@ -1,13 +1,14 @@
 #!/bin/bash
 
 DIRECTORY="./resource/HumanNet"
+FILENAME="HumanNet-XN.tsv"
 
-if [ -f "${DIRECTORY}/HumanNet-XN.tsv" ]; then
+if [ -f "${DIRECTORY}/${FILENAME}" ]; then
     # Control will enter here if that file exists.
-    echo "[HumanNet] file '${DIRECTORY}/HumanNet-XN.tsv' exists; no downloading"
+    echo "[HumanNet] file '${DIRECTORY}/${FILENAME}' exists; no downloading"
 else
-    wget "https://www.inetbio.org/humannet/networks/HumanNet-XN.tsv"
-    mv HumanNet-XN.tsv ${DIRECTORY}
+    wget -O ${FILENAME} "https://www.inetbio.org/humannet/networks/HumanNet-XN.tsv"
+    mv ${FILENAME} ${DIRECTORY}
 fi
 
 python3 edge_humannet.py
