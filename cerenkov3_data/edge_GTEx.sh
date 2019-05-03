@@ -1,12 +1,21 @@
 #!/bin/bash
 
-wget 'https://storage.googleapis.com/gtex_analysis_v7/single_tissue_eqtl_data/GTEx_Analysis_v7_eQTL.tar.gz'
+DIRECTORY="./resource/GTEx"
+SUB_DIR="GTEx_Analysis_v7_eQTL"
 
-tar -xzf GTEx_Analysis_v7_eQTL.tar.gz
-rm GTEx_Analysis_v7_eQTL.tar.gz
+if [ -d "${DIRECTORY}/${SUB_DIR}" ]; then
+    # Control will enter here if that folder exists.
+    echo "[GTEx] folder '${DIRECTORY}/${SUB_DIR}' exists; no downloading"
+else
+    wget "https://storage.googleapis.com/gtex_analysis_v7/single_tissue_eqtl_data/${SUB_DIR}.tar.gz"
+    tar -xzf ${SUB_DIR}.tar.gz
+    rm ${SUB_DIR}.tar.gz
 
-gunzip GTEx_Analysis_v7_eQTL/*.egenes.txt.gz
-rm GTEx_Analysis_v7_eQTL/*.signif_variant_gene_pairs.txt.gz
-mv GTEx_Analysis_v7_eQTL ./edge/snp-gene/eQTL/GTEx/
+    gunzip ${SUB_DIR}/*.egenes.txt.gz
+    rm ${SUB_DIR}/*.signif_variant_gene_pairs.txt.gz
+    mv ${SUB_DIR} ${DIRECTORY}
+fi
 
 python3 edge_GTEx.py
+
+echo "[GTEx] done!"

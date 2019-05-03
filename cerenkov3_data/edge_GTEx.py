@@ -19,9 +19,7 @@ def read_eqtl_df(fn):
                               "rs_id_dbSNP147_GRCh37p13": "rs_id"}, axis=1)
     return eqtl_df
 
-def gen_snp_egene_map(snp_fn, eqtl_dir, eqtl_suffix):
-    snp_df = read_snp_df(snp_fn)
-    
+def gen_snp_egene_map(snp_df, eqtl_dir, eqtl_suffix):
     eqtl_fn_list = list_files(eqtl_dir, eqtl_suffix)
 
     for eqtl_fn in eqtl_fn_list:
@@ -37,18 +35,20 @@ def gen_snp_egene_map(snp_fn, eqtl_dir, eqtl_suffix):
 
 
 if __name__ == "__main__":
-    snp_dir = get_path("vertex/SNP/OSU18")
-    snp_fn = os.path.join(snp_dir, "osu18_SNP.bed")
+    snp_dir = get_path("vertex/SNP")
+    snp_fn = "osu18_SNP.bed"
+    snp_df = read_snp_df(os.path.join(snp_dir, snp_fn))
 
-    eqtl_dir = get_path("edge/snp-gene/eQTL/GTEx/GTEx_Analysis_v7_eQTL")
+    res_dir = get_path("resource/GTEx")
+    eqtl_dir = os.path.join(res_dir, "GTEx_Analysis_v7_eQTL")
     eqtl_suffix = ".v7.egenes.txt"
 
-    snp_egene_map = pd.concat(gen_snp_egene_map(snp_fn, eqtl_dir, eqtl_suffix), ignore_index=True)
+    snp_egene_map = pd.concat(gen_snp_egene_map(snp_df, eqtl_dir, eqtl_suffix), ignore_index=True)
     # Get rid of version numbers
     snp_egene_map.loc[:, "gene_ensembl_id"] = snp_egene_map.loc[:, "gene_ensembl_id"].apply(lambda x: x.split(".")[0])
     
-    output_dir = get_path("edge/snp-gene/eQTL/GTEx")
-    snp_egene_map.to_csv(os.path.join(output_dir, "p1_SNP_x_GTEx.tsv"), sep="\t", index=False)
+    snp_egene_map.to_csv(os.path.join(res_dir, "p1_SNP_x_GTEx.tsv"), sep="\t", index=False)
 
+    output_dir = get_path("edge/snp-gene")
     snp_egene_el = snp_egene_map.loc[:, ["rs_id", "gene_ensembl_id"]].drop_duplicates()
-    snp_egene_el.to_csv(os.path.join(output_dir, "p1_SNP_x_GTEx.edgelist"), sep="\t", index=False, header=False)
+    snp_egene_el.to_csv(os.path.join(output_dir, "SNP_x_GTEx.edgelist"), sep="\t", index=False, header=False)
