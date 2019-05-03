@@ -22,6 +22,6 @@ if __name__ == "__main__":
     merged_dfm = pd.concat(dfms, axis=0)
     merged_dfm.to_csv(os.path.join(res_dir, "p1_coexpedia_merged.tsv"), sep="\t", index=False)
 
-    edge_dir = get_path("edge/gene-gene/co-expression")
+    edge_dir = get_path("edge/gene-gene")
     reduced_dfm = merged_dfm.loc[:, ["Gene_A", "Gene_B"]].drop_duplicates().sort_values(by=["Gene_A", "Gene_B"])
     reduced_dfm.to_csv(os.path.join(edge_dir, "Coexpedia.edgelist"), sep="\t", index=False, header=False)
