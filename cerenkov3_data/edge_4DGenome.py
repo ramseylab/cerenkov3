@@ -1,8 +1,8 @@
 """
 The following 2 BED files, 
 
-- 4DGenome_InteractorA_SNP.bed and 
-- 4DGenome_InteractorB_SNP.bed 
+- InteractorA_SNP_intxn.bed and 
+- InteractorA_SNP_intxn.bed 
 
 have 9 columns each (without a header row):
 
@@ -17,8 +17,8 @@ have 9 columns each (without a header row):
 
 The following 2 BED files:
 
-- 4DGenome_InteractorA_Ensembl_TSS.bed,
-- 4DGenome_InteractorB_Ensembl_TSS.bed
+- InteractorA_Ensembl_TSS_intxn.bed,
+- InteractorA_Ensembl_TSS_intxn.bed
 
 have 11 columns (without a header row):
 
@@ -33,8 +33,8 @@ have 11 columns (without a header row):
 
 The following 2 BED files:
 
-- 4DGenome_InteractorA_Ensembl_promoter.bed,
-- 4DGenome_InteractorB_Ensembl_promoter.bed
+- InteractorA_Ensembl_promoter_intxn.bed,
+- InteractorA_Ensembl_promoter_intxn.bed
 
 have 11 columns (without a header row):
 
@@ -50,24 +50,40 @@ import os
 import pandas as pd
 from util_path import get_path
 
-def read_intx_tss_bed(filename):
-    return pd.read_csv(filename, header=None, sep="\t", usecols=[3, 7, 8],
+def get_genes_with_interacted_TSSs(interactor_tss_intxn_bed):
+    """
+    Read the `BedTools intersect` output of interactor and TSS BEDs, output IDs of genes whose TSS overlaps with an interator region
+    """
+    return pd.read_csv(interactor_tss_intxn_bed, header=None, sep="\t", usecols=[3, 7, 8],
                        names=["interaction_id", "gene_name", "gene_ensembl_id"]).drop_duplicates()
 
-def read_intx_promoter_bed(filename):
-    return read_intx_tss_bed(filename)  # delegation
+def get_genes_with_interacted_promoters(intx_prm_intersect_bed):
+    """
+    Read the `BedTools intersect` output of interactor and promoter BEDs, output IDs of genes whose promoter overlaps with an interator region
+    """
+    return get_genes_with_interacted_TSSs(intx_prm_intersect_bed)  # delegation
 
 
-def read_intx_snp_bed(filename):
-    return pd.read_csv(filename, header=None, sep="\t", usecols=[3, 7],
+def get_interacted_SNPs(interactor_snp_intxn_bed):
+    """
+    Read the `BedTools intersect` output of interactor and SNP BEDs, output IDs of SNPs who overlaps with an interator region
+    """
+    return pd.read_csv(interactor_snp_intxn_bed, header=None, sep="\t", usecols=[3, 7],
                        names=["interaction_id", "rs_id"]).drop_duplicates()
 
-def intx_cross_inner_join(xA_df, xB_df, yA_df, yB_df):
+def _cross_inner_join(xA_df, xB_df, yA_df, yB_df):
     """
     x, y: the types of entities that reside in 4DGenome interactor regions (i.e. "SNP", "TSS" and "Promoter")
     A, B: interactor regions
 
     E.g. if x = "SNP", then "xA" means SNPs that reside in interactor A regions
+
+    Perform 2 joins on "interaction_id", one between (xA, yB) and the other between (xB, yA); 
+    then concatenate the results of these two joins
+
+    xA ==+ +>> yA
+          X
+    xB >>+ +== yB
     """
     xA_yB_map = xA_df.merge(yB_df, on="interaction_id", how="inner")
     xB_yA_map = xB_df.merge(yA_df, on="interaction_id", how="inner")
@@ -76,7 +92,10 @@ def intx_cross_inner_join(xA_df, xB_df, yA_df, yB_df):
 
     return xy_map
 
-def intx_inner_join(xA_df, xB_df):
+def _inner_join(xA_df, xB_df):
+    """
+    Simple innner join on "interaction_id"
+    """
     xA_xB_map = xA_df.merge(xB_df, on="interaction_id", how="inner", suffixes=('_A', '_B'))
 
     return xA_xB_map
@@ -89,35 +108,34 @@ def output_snp_snp_edgelist(snp_snp_map):
 
 
 if __name__ == "__main__":
-    _4DGenome_dir = get_path("edge/snp-gene/Chromatin-Interaction/4DGenome")
+    _4DGenome_dir = get_path("resource/4DGenome")
 
-    snp_A_df = read_intx_snp_bed(os.path.join(_4DGenome_dir, "4DGenome_InteractorA_SNP.bed"))
-    snp_B_df = read_intx_snp_bed(os.path.join(_4DGenome_dir, "4DGenome_InteractorB_SNP.bed"))
+    snp_in_interactorA = get_interacted_SNPs(os.path.join(_4DGenome_dir, "InteractorA_SNP_intxn.bed"))
+    snp_in_interactorB = get_interacted_SNPs(os.path.join(_4DGenome_dir, "InteractorB_SNP_intxn.bed"))
 
-    tss_A_df = read_intx_tss_bed(os.path.join(_4DGenome_dir, "4DGenome_InteractorA_Ensembl_TSS.bed"))
-    tss_B_df = read_intx_tss_bed(os.path.join(_4DGenome_dir, "4DGenome_InteractorB_Ensembl_TSS.bed"))
+    gene_tss_in_interactorA = get_genes_with_interacted_TSSs(os.path.join(_4DGenome_dir, "InteractorA_Ensembl_TSS_intxn.bed"))
+    gene_tss_in_interactorB = get_genes_with_interacted_TSSs(os.path.join(_4DGenome_dir, "InteractorB_Ensembl_TSS_intxn.bed"))
 
-    prm_A_df = read_intx_promoter_bed(os.path.join(_4DGenome_dir, "4DGenome_InteractorA_Ensembl_promoter.bed"))
-    prm_B_df = read_intx_promoter_bed(os.path.join(_4DGenome_dir, "4DGenome_InteractorB_Ensembl_promoter.bed"))
+    gene_prm_in_interactorA = get_genes_with_interacted_promoters(os.path.join(_4DGenome_dir, "InteractorA_Ensembl_promoter_intxn.bed"))
+    gene_prm_in_interactorB = get_genes_with_interacted_promoters(os.path.join(_4DGenome_dir, "InteractorB_Ensembl_promoter_intxn.bed"))
 
-    # SNP-gene edges (via TSSs/promoters)
-    snp_tss_map = intx_cross_inner_join(snp_A_df, snp_B_df, tss_A_df, tss_B_df)
-    snp_prm_map = intx_cross_inner_join(snp_A_df, snp_B_df, prm_A_df, prm_B_df)
+    # interacted (SNP, gene) pairs (via TSSs/promoters)
+    snp_tss_map = _cross_inner_join(snp_in_interactorA, snp_in_interactorB, gene_tss_in_interactorA, gene_tss_in_interactorB)
+    snp_prm_map = _cross_inner_join(snp_in_interactorA, snp_in_interactorB, gene_prm_in_interactorA, gene_prm_in_interactorB)
+    # interacted (SNP, SNP) pairs
+    snp_snp_map = _inner_join(snp_in_interactorA, snp_in_interactorB)
     
     snp_tss_map.to_csv(os.path.join(_4DGenome_dir, "p1_SNP_x_4DGenome_TSS.tsv"), sep="\t", index=False)
     snp_prm_map.to_csv(os.path.join(_4DGenome_dir, "p1_SNP_x_4DGenome_promoter.tsv"), sep="\t", index=False)
+    snp_snp_map.to_csv(os.path.join(_4DGenome_dir, "p1_SNP_x_4DGenome_SNP.tsv"), sep="\t", index=False)
 
     snp_tss_el = output_snp_gene_edgelist(snp_tss_map)
     snp_prm_el = output_snp_gene_edgelist(snp_prm_map)
-    
-    snp_tss_el.to_csv(os.path.join(_4DGenome_dir, "p2_SNP_x_4DGenome_TSS.edgelist"), sep="\t", index=False, header=False)
-    snp_prm_el.to_csv(os.path.join(_4DGenome_dir, "p2_SNP_x_4DGenome_promoter.edgelist"), sep="\t", index=False, header=False)
-    
-    # SNP-SNP edges
-    _4DGenome_dir = get_path("edge/snp-snp/Chromatin-Interaction/4DGenome")
-
-    snp_snp_map = intx_inner_join(snp_A_df, snp_B_df)
-    snp_snp_map.to_csv(os.path.join(_4DGenome_dir, "p1_SNP_x_4DGenome_SNP.tsv"), sep="\t", index=False)
-    
     snp_snp_el = output_snp_snp_edgelist(snp_snp_map)
-    snp_snp_el.to_csv(os.path.join(_4DGenome_dir, "p2_SNP_x_4DGenome_SNP.edgelist"), sep="\t", index=False, header=False)
+    
+    _output_dir = get_path("edge/snp-gene")
+    snp_tss_el.to_csv(os.path.join(_output_dir, "SNP_x_4DGenome_TSS.edgelist"), sep="\t", index=False, header=False)
+    snp_prm_el.to_csv(os.path.join(_output_dir, "SNP_x_4DGenome_promoter.edgelist"), sep="\t", index=False, header=False)
+    
+    _output_dir = get_path("edge/snp-snp")
+    snp_snp_el.to_csv(os.path.join(_output_dir, "SNP_x_4DGenome_SNP.edgelist"), sep="\t", index=False, header=False)
