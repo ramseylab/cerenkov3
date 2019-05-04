@@ -54,8 +54,8 @@ def get_genes_with_interacted_TSSs(interactor_tss_intxn_bed):
     """
     Read the `BedTools intersect` output of interactor and TSS BEDs, output IDs of genes whose TSS overlaps with an interator region
     """
-    return pd.read_csv(interactor_tss_intxn_bed, header=None, sep="\t", usecols=[3, 7, 8],
-                       names=["interaction_id", "gene_name", "gene_ensembl_id"]).drop_duplicates()
+    return pd.read_csv(interactor_tss_intxn_bed, header=None, sep="\t", usecols=[3, 8],
+                       names=["interaction_id", "gene_ensembl_id"]).drop_duplicates()
 
 def get_genes_with_interacted_promoters(intx_prm_intersect_bed):
     """
@@ -100,6 +100,31 @@ def _inner_join(xA_df, xB_df):
 
     return xA_xB_map
 
+def _dataframe_difference(df_a, df_b):
+    """
+    Based on our definition of promoters, if a gene's TSS resides in a 4DGenome region, certainly its promoter will overlap with that given region.
+    Therefore the set of (SNP, gene) pairs made from interacted promoters will definitely be a superset of the set made from interacted TSSs.
+    Here we want to substract the latter set from the former one, leaving only (SNP, gene) pairs where the gene's promoter overlaps with the interaction region, 
+    but its TSS does not.
+
+    See `resource/4DGenome/README.md` for more details.
+    """
+    if not df_a.columns.equals(df_b.columns):
+        raise ValueError("Please make sure the input dataframes have the same header. Got {} and {}.".format(df_a.columns, df_b.columns))
+
+    # convert a data frame to a set of tuples
+    set_a = set(tuple(x) for x in df_a.values)
+    set_b = set(tuple(x) for x in df_b.values)
+
+    # set difference
+    set_a_minus_b = set_a - set_b
+
+    # convert a set of tuples back into a dataframe
+    df_a_minus_b = pd.DataFrame(data=set_a_minus_b, columns=df_a.columns)
+
+    return df_a_minus_b
+
+
 def output_snp_gene_edgelist(snp_gene_map):             
     return snp_gene_map.loc[:, ["rs_id", "gene_ensembl_id"]].drop_duplicates()
 
@@ -122,6 +147,10 @@ if __name__ == "__main__":
     # interacted (SNP, gene) pairs (via TSSs/promoters)
     snp_tss_map = _cross_inner_join(snp_in_interactorA, snp_in_interactorB, gene_tss_in_interactorA, gene_tss_in_interactorB)
     snp_prm_map = _cross_inner_join(snp_in_interactorA, snp_in_interactorB, gene_prm_in_interactorA, gene_prm_in_interactorB)
+
+    # remove redundant (SNP, gene) pairs that are both associated by TSSs and promoters
+    snp_prm_map = _dataframe_difference(snp_prm_map, snp_tss_map)
+
     # interacted (SNP, SNP) pairs
     snp_snp_map = _inner_join(snp_in_interactorA, snp_in_interactorB)
     

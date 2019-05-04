@@ -30,7 +30,7 @@ As illustrated above, if a SNP and a TSS/promoter correspondingly reside in, or 
 
 The relationship of residence/overlap will be tested by [`bedtools intersect` CLI](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html).
 
-### Possible SNP-gene edge exclusion based on pathway media
+### SNP-gene edge exclusion based on pathway media
 
 Based on our definition of promoters, if a gene's TSS resides in a 4DGenome region, certainly its promoter will overlap with that given region. Therefore there would be 2 weights, $w_{\text{TSS}}$ and $w_{\text{promoter}}$ for any snp-gene edge ending at this gene.
 
@@ -47,8 +47,6 @@ Note that in our application, we will output two $s$-$x$ intermediate edges, one
 You can consider `A`-Promoter-`B1` pathway redundant in this scenario, but even with that pathway eliminated, you'll still have 2 $s$-$x$ edges (in 2 edge lists correspondingly). 
 
 However, if there is no such `Region B2`, you'll end with only one $s$-$x$ edges (in the SNP-TSS edge list).
-
-Note: we do not perform such elimination in our application for now but we may try in the future.
 
 ## SNP-SNP edges
 
