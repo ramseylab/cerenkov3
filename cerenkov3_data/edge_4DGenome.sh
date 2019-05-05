@@ -4,7 +4,7 @@ DIRECTORY="./resource/4DGenome"
 FILENAME="4DGenome_HomoSapiens_hg19.txt"
 
 if [ -f "${DIRECTORY}/${FILENAME}" ]; then
-    echo "[4DGenome] file '${DIRECTORY}/${FILENAME}' exists; no downloading"
+    echo "[4DGenome] file '${DIRECTORY}/${FILENAME}' exists; skip downloading"
 else
     wget "https://4dgenome.research.chop.edu/Tables/${FILENAME}"
     mv ${FILENAME} ${DIRECTORY}
