@@ -3,6 +3,7 @@ from io import StringIO
 import pandas as pd
 from pybedtools import BedTool
 from util_path import get_path
+from util_ensembl import get_mapped_Ensembl_IDs
 
 
 def make_snp_start_BED(snp_bed_fn):
@@ -67,10 +68,9 @@ if __name__ == "__main__":
 
     # For any closest SNP-gene pair (s,g), if g's Ensembl ID can be mapped to an Entrez ID, then output an edge (s, g_entrez)
     # if not, output 2 edges in the edgelist file, one (s, g_ensembl) and the other (s, g_entrez)
-    e2e_df = pd.read_csv(os.path.join(gene_dir, "Ensembl_x_Entrez.tsv"), sep="\t")
     
     snp_ensembl_el = snp_ensembl_map.loc[:, ["snpName", "geneID"]]
-    snp_ensembl_el = snp_ensembl_el.loc[~snp_ensembl_el.geneID.isin(set(e2e_df.Ensembl_Gene_ID)), :]  # Keep Non-mappable Ensembl IDs only
+    snp_ensembl_el = snp_ensembl_el.loc[~snp_ensembl_el.geneID.isin(get_mapped_Ensembl_IDs()), :]  # Keep Non-mappable Ensembl IDs only
     snp_entrez_el = snp_entrez_map.loc[:, ["snpName", "geneID"]]
     snp_gene_el = pd.concat([snp_ensembl_el, snp_entrez_el])
 
