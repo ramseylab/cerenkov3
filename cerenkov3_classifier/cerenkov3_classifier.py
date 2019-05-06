@@ -90,35 +90,49 @@ class Cerenkov3Classifier(BaseEstimator, ClassifierMixin):
                                                        p=self.p, 
                                                        q=self.q, 
                                                        w=self.w)
-        # n2v_feat_df has columns `id_colname`, `int_id_colname` and `label_colname` (e.g. "name", "INT_ID" and "label")
+        # n2v_feat_df has columns `label_id_colname`, `int_id_colname` and `label_colname` (e.g. "name", "INT_ID" and "label")
         n2v_feat_df = pd.read_csv(n2v_feat_path, sep="\t")
+        
+        n2v_id_col = self.n2v_manager.label_id_colname
+        n2v_label_col = self.n2v_manager.label_colname
+        n2v_int_id_col = self.n2v_manager.int_id_colname
 
-        if ext_manager:
-            # ext_feat_df has columns `id_colname`, `int_id_colname` and `label_colname` (e.g. "name", "INT_ID" and "label")
+        if self.ext_manager:
+            # ext_feat_df has columns `feat_id_colname`, `int_id_colname` and `feat_label_colname` (e.g. "name", "INT_ID" and "label")
             ext_feat_df = self.ext_manager.load_feat()
-            if ext_manager.id_colname in ext_feat_df:
-                ext_feat_df.drop(columns=ext_manager.id_colname, inplace=True)
-            if ext_manager.label_colname in ext_feat_df:
-                ext_feat_df.drop(columns=ext_manager.label_colname, inplace=True)
-            
-            if ext_manager.int_id_colname == n2v_manager.int_id_colname:
-                self.feat_df_ = n2v_feat_df.merge(ext_feat_df, how="left", on=n2v_manager.int_id_colname).set_index(n2v_manager.int_id_colname)
+
+            ext_id_col = self.ext_manager.feat_id_colname
+            ext_label_col = self.ext_manager.feat_label_colname
+            ext_int_id_col = self.ext_manager.int_id_colname
+
+            # trim ext_feat_df
+            if ext_id_col in ext_feat_df:
+                ext_feat_df.drop(columns=ext_id_col, inplace=True)
+            if ext_label_col in ext_feat_df:
+                ext_feat_df.drop(columns=ext_label_col, inplace=True)
+
+            # merge ext_feat_df and n2v_feat_df on "INT_ID"
+            if ext_int_id_col == n2v_int_id_col:
+                self.feat_df_ = n2v_feat_df.merge(ext_feat_df, how="left", on=n2v_int_id_col)
             else:
-                self.feat_df_ = n2v_feat_df.merge(ext_feat_df, how="left", left_on=n2v_manager.int_id_colname, right_on=ext_manager.int_id_colname)
-                self.feat_df_.drop(columns=ext_manager.int_id_colname)
-                self.feat_df_.set_index(n2v_manager.int_id_colname, inplace=True)
+                self.feat_df_ = n2v_feat_df.merge(ext_feat_df, how="left", left_on=n2v_int_id_col, right_on=ext_int_id_col)
+                self.feat_df_.drop(columns=ext_int_id_col, inplace=True)
+        else:
+            self.feat_df_ = n2v_feat_df
+            
+        self.feat_df_.set_index(n2v_int_id_col, inplace=True)
 
         # dynamically determine the features after training starts
         # `self.X_` is the true feature matrix
         self.X_ = self.feat_df_.loc[X_INT_ID, :]
 
-        if n2v_manager.id_colname in self.X_:
-            self.X_.drop(columns=n2v_manager.id_colname, inplace=True)
-        if n2v_manager.label_colname in self.X_:
-            self.y_ = self.X_.loc[:, n2v_manager.label_colname]
+        if n2v_id_col in self.X_:
+            self.X_.drop(columns=n2v_id_col, inplace=True)
+        if n2v_label_col in self.X_:
+            self.y_ = self.X_.loc[:, n2v_label_col]
             if not np.array_equal(self.y_, y):
                 raise ValueError("input y differ from labels")
-            self.X_.drop(columns=n2v_manager.label_colname, inplace=True)
+            self.X_.drop(columns=n2v_label_col, inplace=True)
         else:
             self.y_ = y
         
@@ -145,11 +159,14 @@ class Cerenkov3Classifier(BaseEstimator, ClassifierMixin):
         # Input validation
         # X = check_array(X)
 
+        n2v_id_col = self.n2v_manager.label_id_colname
+        n2v_label_col = self.n2v_manager.label_colname
+
         X_ = self.feat_df_.loc[X_INT_ID, :]
-        if n2v_manager.id_colname in X_:
-            X_.drop(columns=n2v_manager.id_colname, inplace=True)
-        if n2v_manager.label_colname in X_:
-            X_.drop(columns=n2v_manager.label_colname, inplace=True)
+        if n2v_id_col in X_:
+            X_.drop(columns=n2v_id_col, inplace=True)
+        if n2v_label_col in X_:
+            X_.drop(columns=n2v_label_col, inplace=True)
 
         y_ = self.classifier.predict(X_)
         return y_
@@ -161,11 +178,14 @@ class Cerenkov3Classifier(BaseEstimator, ClassifierMixin):
         # Input validation
         # X = check_array(X)
 
+        n2v_id_col = self.n2v_manager.label_id_colname
+        n2v_label_col = self.n2v_manager.label_colname
+
         X_ = self.feat_df_.loc[X_INT_ID, :]
-        if n2v_manager.id_colname in X_:
-            X_.drop(columns=n2v_manager.id_colname, inplace=True)
-        if n2v_manager.label_colname in X_:
-            X_.drop(columns=n2v_manager.label_colname, inplace=True)
+        if n2v_id_col in X_:
+            X_.drop(columns=n2v_id_col, inplace=True)
+        if n2v_label_col in X_:
+            X_.drop(columns=n2v_label_col, inplace=True)
 
         if hasattr(self.classifier, "predict_proba"):
             y_ = self.classifier.predict_proba(X_)
@@ -179,6 +199,3 @@ class Cerenkov3Classifier(BaseEstimator, ClassifierMixin):
             else:
                 decision_2d = decision
             return softmax(decision_2d, copy=False)
-
-
-
