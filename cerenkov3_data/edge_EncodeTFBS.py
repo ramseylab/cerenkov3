@@ -5,6 +5,7 @@ import mygene
 from util_uscs import GenomeBrowserClient as GBC
 from util_uscs import binary_encode_tfbs
 from util_path import get_path
+from util_dei import filter_dei
 
 
 def get_snp_tfbs_matrix(rsid_list, config_key="remote_hg19"):
@@ -121,6 +122,7 @@ if __name__ == "__main__":
 
     snp_gene_map = snp_tfbs_map.merge(tfbs_gene_map, on="symbol")
     snp_gene_el = snp_gene_map.loc[:, ["name", "entrezgene"]]
+    snp_gene_el = filter_dei(snp_gene_el, id_col="entrezgene")
 
     output_dir = get_path("edge/snp-gene/")
     snp_gene_el.to_csv(os.path.join(output_dir, "SNP_x_EncodeTFBS.edgelist"), sep="\t", header=False, index=False)
