@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # IPython Notebook
-.ipynb
+*.ipynb
 .ipynb_checkpoints
 
 # Project-specific
