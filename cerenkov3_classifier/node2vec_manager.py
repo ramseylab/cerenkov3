@@ -36,21 +36,49 @@ logger = logging.getLogger(__name__)
 
 
 class N2vManager(object):
-    def __init__(self, emb_dir, feat_dir, command, id_map_path, label_path, id_colname, int_id_colname, label_colname):
+    def __init__(self, emb_dir, feat_dir, command, id_map, orig_id_colname, int_id_colname, label_map, label_id_colname, label_colname):
         self.emb_dir = emb_dir
         self.feat_dir = feat_dir
         self.command = command
-        self.id_map_path = id_map_path
-        self.label_path = label_path
 
-        self.id_colname = id_colname
+        if len(id_map.columns) != 2:
+            raise ValueError("Dataframe id_map should contain exactly 2 columns. Got {}.".format(len(id_map)))
+
+        if orig_id_colname not in id_map:
+            raise ValueError("Column '{}' does not exist in id_map".format(orig_id_colname))
+
+        if int_id_colname not in id_map:
+            raise ValueError("Column '{}' does not exist in id_map".format(int_id_colname))
+
+        if len(label_map.columns) != 2:
+            raise ValueError("Dataframe label_map should contain exactly 2 columns. Got {}.".format(len(label_map)))
+
+        if label_id_colname not in label_map:
+            raise ValueError("Column '{}' does not exist in label_map".format(label_id_colname))
+
+        if label_colname not in label_map:
+            raise ValueError("Column '{}' does not exist in label_map".format(label_colname))
+
+        if label_colname == int_id_colname:
+            raise ValueError("Param 'label_colname' cannot be the same with 'int_id_colname'. Please rename.")
+
+        if any(colname.startswith("node2vec_") for colname in [orig_id_colname, int_id_colname, label_id_colname, label_colname]):
+            raise ValueError("Any input column name cannot start with 'node2vec_'. This prefix is preserved for Node2vec features.")
+        
+        self.id_map = id_map
+        self.orig_id_colname = orig_id_colname
         self.int_id_colname = int_id_colname
+
+        self.label_map = label_map
+        self.label_id_colname = label_id_colname
         self.label_colname = label_colname
 
-        self.snp_id_map = pd.read_csv(id_map_path, sep="\t")
-        self.snp_id_map.columns = [id_colname, int_id_colname]
-        
-        self.snp_label_map = pd.read_csv(label_path, sep="\t", usecols=[id_colname, label_colname])  
+        # `label_id_map_` will contain 3 columns: label_id_colname, label_colname, int_id_colname
+        if self.label_id_colname == self.orig_id_colname:
+            self.label_id_map_ = self.label_map.merge(self.id_map, how="left", on=self.label_id_colname)
+        else:
+            self.label_id_map_ = self.label_map.merge(self.id_map, how="left", left_on=self.label_id_colname, right_on=self.orig_id_colname)
+            self.label_id_map_.drop(columns=self.orig_id_colname, inplace=True)
 
     def _format_command_param(self, d, l, r, k, p, q, w, i, o):
         yield "-d:{}".format(d)
@@ -127,10 +155,12 @@ class N2vManager(object):
             logger.info("generating features from embedding...")
 
             emb_path = self.generate_emb(network_path, d, l, r, k, p, q, w)
+            # emb_df has only INT_ID (self.int_id_colname), no rsID, no label
             emb_df = self._read_emb(emb_path)
 
-            feat_df = self.snp_id_map.merge(self.snp_label_map, how="left", on=self.id_colname)
-            feat_df = feat_df.merge(emb_df, how="left", on=self.int_id_colname)
+            # now we add rsID and label back into `emb_df`
+            feat_df = self.label_id_map_.merge(emb_df, how="left", on=self.int_id_colname)
+            # `feat_df` guarantees to be a dataframe with columns `int_id_colname`, `label_id_colname` and `label_colname`
             feat_df.to_csv(feat_path, sep="\t", header=True, index=False)
             
             logger.info("feature saved to {}".format(feat_path))
@@ -140,10 +170,12 @@ class N2vManager(object):
         return feat_path
 
 # if __name__ == "__main__":
+#     id_map = pd.read_csv("./INT_ID_EDGELIST/SNP_INT_ID.tsv", sep="\t")  # columns = ["ID", "INT_ID"]
+#     label_map = pd.read_csv("../cerenkov3_data/vertex/SNP/osu18_SNP_basic_info.tsv", sep="\t", usecols=["name", "label"])
+
 #     n2vm = N2vManager(emb_dir="./N2V_EMB", feat_dir="./N2V_FEAT", command="./node2vec", 
-#                       id_map_path="./INT_ID_EDGELIST/SNP_INT_ID.tsv", 
-#                       label_path="../cerenkov3_data/vertex/SNP/osu18_SNP_basic_info.tsv",
-#                       id_colname="name", int_id_colname="INT_ID", label_colname="label")
+#                       id_map=id_map, orig_id_colname="ID", int_id_colname="INT_ID",
+#                       label_map=label_map, label_id_colname="name", label_colname="label")
 
 #     network_path = "./INT_ID_NETWORK/Sgn_1.0_1.0_1.0_1.0_1.0_1.0_1.0_1.0_sum.tsv"
 #     train_params = dict(
