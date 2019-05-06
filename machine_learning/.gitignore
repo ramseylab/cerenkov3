@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IPython Notebook
+*.ipynb
+.ipynb_checkpoints
+
+# Project-specific
+__obsolete__
+*.txt
+*.tsv
+*.tsv#
+*.bed
+*.edgelist
+*.zip
+*.Rhistory
+*.log
+node2vec
