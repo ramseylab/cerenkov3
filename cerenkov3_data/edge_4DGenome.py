@@ -49,6 +49,8 @@ have 11 columns (without a header row):
 import os
 import pandas as pd
 from util_path import get_path
+from util_ensembl import map_Ensembl_IDs_to_Entrez
+
 
 def get_genes_with_interacted_TSSs(interactor_tss_intxn_bed):
     """
@@ -124,9 +126,13 @@ def _dataframe_difference(df_a, df_b):
 
     return df_a_minus_b
 
-
 def output_snp_gene_edgelist(snp_gene_map):             
-    return snp_gene_map.loc[:, ["rs_id", "gene_ensembl_id"]].drop_duplicates()
+    snp_gene_el = snp_gene_map.loc[:, ["rs_id", "gene_ensembl_id"]].drop_duplicates()
+
+    snp_gene_el = map_Ensembl_IDs_to_Entrez(snp_gene_el, ensembl_colname="gene_ensembl_id", new_colname="gene_id", keep_unmapped=True)
+    snp_gene_el.sort_values(by="gene_id", inplace=True)
+
+    return snp_gene_el
 
 def output_snp_snp_edgelist(snp_snp_map):
     return snp_snp_map.loc[:, ["rs_id_A", "rs_id_B"]].drop_duplicates()

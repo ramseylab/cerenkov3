@@ -2,6 +2,7 @@ import os
 from functools import reduce
 import pandas as pd
 from util_path import get_path
+from util_ensembl import map_Ensembl_IDs_to_Entrez
 
 
 def read_snp_df(fn):
@@ -49,6 +50,9 @@ if __name__ == "__main__":
     
     snp_egene_map.to_csv(os.path.join(res_dir, "p1_SNP_x_GTEx.tsv"), sep="\t", index=False)
 
-    output_dir = get_path("edge/snp-gene")
     snp_egene_el = snp_egene_map.loc[:, ["rs_id", "gene_ensembl_id"]].drop_duplicates()
+    snp_egene_el = map_Ensembl_IDs_to_Entrez(snp_egene_el, ensembl_colname="gene_ensembl_id", new_colname="gene_id", keep_unmapped=True)
+    snp_egene_el.sort_values(by="gene_id", inplace=True)
+
+    output_dir = get_path("edge/snp-gene")
     snp_egene_el.to_csv(os.path.join(output_dir, "SNP_x_GTEx.edgelist"), sep="\t", index=False, header=False)
