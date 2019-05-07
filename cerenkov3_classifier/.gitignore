@@ -12,9 +12,9 @@ __obsolete__
 *.txt
 *.tsv
 *.tsv#
+*.emb
 *.bed
 *.edgelist
 *.zip
 *.Rhistory
 *.log
-node2vec
