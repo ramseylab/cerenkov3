@@ -1,6 +1,6 @@
 import pandas as pd
 
-class ExtraFeatManager(object):
+class ExtraFeatManager:
     def __init__(self, feat_df, feat_id_colname, feat_label_colname, id_map, orig_id_colname, int_id_colname):
         if feat_id_colname not in feat_df:
             raise ValueError("Column '{}' does not exist in feat_df".format(feat_id_colname))

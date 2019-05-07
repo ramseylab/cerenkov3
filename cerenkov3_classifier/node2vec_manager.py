@@ -35,7 +35,7 @@ logging.basicConfig(filename=__name__ + ".log",
 logger = logging.getLogger(__name__)
 
 
-class N2vManager(object):
+class N2vManager:
     def __init__(self, emb_dir, feat_dir, command, id_map, orig_id_colname, int_id_colname, label_map, label_id_colname, label_colname):
         self.emb_dir = emb_dir
         self.feat_dir = feat_dir

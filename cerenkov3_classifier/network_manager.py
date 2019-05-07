@@ -14,7 +14,7 @@ logging.basicConfig(filename=__name__ + ".log",
 logger = logging.getLogger(__name__)
 
 
-class SgnManager(object):
+class SgnManager:
     """
     Sgn == SNP-Gene Network
     """
@@ -110,16 +110,16 @@ class SgnManager(object):
 
         logger.info("Elapsed time: %.1f [sec]" % (t_stop - t_start))
 
-if __name__ == "__main__":
-    sgnm = SgnManager(edgelist_dir="./INT_ID_EDGELIST", network_dir="./INT_ID_NETWORK")
+# if __name__ == "__main__":
+#     sgnm = SgnManager(edgelist_dir="./INT_ID_EDGELIST", network_dir="./INT_ID_NETWORK")
 
-    weight_grid = {"w_4DGp": [1.0],
-                   "w_4DGt": [1.0],
-                   "w_GTEx": [1.0],
-                   "w_TFBS": [1.0],
-                   "w_NG": [1.0],
-                   "w_coexp": [1.0],
-                   "w_hn": [1.0],
-                   "w_bg": [1.0, 2.0]}
+#     weight_grid = {"w_4DGp": [1.0],
+#                    "w_4DGt": [1.0],
+#                    "w_GTEx": [1.0],
+#                    "w_TFBS": [1.0],
+#                    "w_NG": [1.0],
+#                    "w_coexp": [1.0],
+#                    "w_hn": [1.0],
+#                    "w_bg": [1.0, 2.0]}
 
-    sgnm.batch_generate_sgn(weight_grid)
+#     sgnm.batch_generate_sgn(weight_grid)
