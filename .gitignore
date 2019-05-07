@@ -17,3 +17,4 @@ __obsolete__
 *.zip
 *.Rhistory
 *.EntrezGene
+*.log
