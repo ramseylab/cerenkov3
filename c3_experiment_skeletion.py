@@ -1,13 +1,11 @@
 import pandas as pd
-import numpy as np
-from itertools import product
 from xgboost import XGBClassifier
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, cross_validate
 from cerenkov3_classifier.cerenkov3_classifier import Cerenkov3Classifier
 from cerenkov3_classifier.node2vec_manager import N2vManager
 from cerenkov3_classifier.extra_feat_manager import ExtraFeatManager
 from cerenkov3_classifier.network_manager import SgnManager
-from util_report import save_hp_search, save_repeated_hp_searches
+from locus_sampling.cross_validation import BalancedGroupKFold
 
 _RANDOM_STATE = 1337
 
@@ -24,7 +22,7 @@ def prepare_for_experiment():
     group_map = pd.read_csv(snp_group_path, sep="\t", usecols=["name", "group_id"])
     
     Xyg = label_map.merge(group_map, how="left", on="name")
-    Xyg = Xyg.merge(Xyg, how="left", left_on="name", right_on="ID")
+    Xyg = Xyg.merge(id_map, how="left", left_on="name", right_on="ID")
 
     X_INT_ID = Xyg.loc[:, "INT_ID"]
     y = Xyg.loc[:, "label"]
@@ -59,60 +57,67 @@ def prepare_for_experiment():
     return X_INT_ID, y, g, c3c
 
 
-def x_validata(tag, sgn_weight_dist, n2v_param_dist, clf_param_dist, score_names=['average_precision', 'roc_auc']):    
+def x_validate(sgn_weight_dist, n2v_param_dist, clf_param_dist, scoring, n_repeats=1):    
     X_INT_ID, y, g, c3c = prepare_for_experiment()
 
     param_dist = {**sgn_weight_dist, **n2v_param_dist, **clf_param_dist}
     c3c = c3c.set_params(**param_dist)
 
-    cv = BalancedGroupKFold(n_splits=5, slop_allowed=0.5, random_state=_RANDOM_STATE)
-    scores = cross_validate(estimator=c3c, X=X_INT_ID, y=y, groups=g, scoring=score_names, cv=cv, return_train_score=True)
+    def _run():
+        for i in range(0, n_repeats):
+            cv = BalancedGroupKFold(n_splits=5, slop_allowed=0.5, random_state=_RANDOM_STATE + i)
+            result_dict = cross_validate(estimator=c3c, X=X_INT_ID, y=y, groups=g, scoring=scoring, cv=cv, return_train_score=True)
+            yield result_dict
+        
+    result_dict_list = list(_run())
 
-    save_x_validate(scores, tag, score_names)
+    return result_dict_list
 
-def hp_search(tag, sgn_weight_dist, n2v_param_dist, clf_param_dist, search_type, score_names=['average_precision', 'roc_auc'], n_iter_search=None):
-    param_dist = {**sgn_weight_dist, **n2v_param_dist, **clf_param_dist}
-    cv = BalancedGroupKFold(n_splits=5, slop_allowed=0.5, random_state=_RANDOM_STATE)
-    X_INT_ID, y, g, c3c = prepare_for_experiment()
 
-    if search_type == "random":
-        search = RandomizedSearchCV(c3c, param_distributions=param_dist,
-                                    n_iter=n_iter_search, cv=cv, scoring=score_names, random_state=_RANDOM_STATE, refit=False, return_train_score=True)
-        search.fit(X_INT_ID, y, groups=g)
-    elif search_type == "grid":
-        search = GridSearchCV(c3c, param_grid=param_dist, cv=cv, scoring=score_names, refit=False, return_train_score=True)
-        search.fit(X_INT_ID, y, groups=g)
-    else:
-        raise ValueError("Invalid search_type. Got '{}'".format(search_type))
-
-    tag = "{}_{}".format(tag, search_type)
-    save_hp_search(search, tag, score_names)
+# def hp_search(sgn_weight_dist, n2v_param_dist, clf_param_dist, search_type, scoring, n_iter_search=None):
+#     X_INT_ID, y, g, c3c = prepare_for_experiment()
     
-def repeated_hp_searches(tag, sgn_weight_dist, n2v_param_dist, clf_param_dist, search_type, score_names=['average_precision', 'roc_auc'], n_iter_search=None, n_repeats=10):
-    param_dist = {**sgn_weight_dist, **n2v_param_dist, **clf_param_dist}
-    X_INT_ID, y, g, c3c = prepare_for_experiment()
+#     param_dist = {**sgn_weight_dist, **n2v_param_dist, **clf_param_dist}
+    
+#     cv = BalancedGroupKFold(n_splits=5, slop_allowed=0.5, random_state=_RANDOM_STATE)
 
+#     if search_type == "random":
+#         search = RandomizedSearchCV(c3c, param_distributions=param_dist,
+#                                     n_iter=n_iter_search, cv=cv, scoring=scoring, random_state=_RANDOM_STATE, refit=False, return_train_score=True)
+#         search.fit(X_INT_ID, y, groups=g)
+#     elif search_type == "grid":
+#         search = GridSearchCV(c3c, param_grid=param_dist, cv=cv, scoring=scoring, refit=False, return_train_score=True)
+#         search.fit(X_INT_ID, y, groups=g)
+#     else:
+#         raise ValueError("Invalid search_type. Got '{}'".format(search_type))
+
+#     return search
+    
+def hp_search(sgn_weight_dist, n2v_param_dist, clf_param_dist, search_type, scoring, n_iter_search=None, n_repeats=1):
+    X_INT_ID, y, g, c3c = prepare_for_experiment()
+    
+    param_dist = {**sgn_weight_dist, **n2v_param_dist, **clf_param_dist}
+    
     def _run():
         if search_type == "random":
             for i in range(0, n_repeats):
                 cv = BalancedGroupKFold(n_splits=5, slop_allowed=0.5, random_state=_RANDOM_STATE + i)
                 search = RandomizedSearchCV(c3c, param_distributions=param_dist,
-                                            n_iter=n_iter_search, cv=cv, scoring=score_names, random_state=_RANDOM_STATE, refit=False, return_train_score=True)
+                                            n_iter=n_iter_search, cv=cv, scoring=scoring, random_state=_RANDOM_STATE, refit=False, return_train_score=True)
                 search.fit(X_INT_ID, y, groups=g)
                 yield search
         elif search_type == "grid":
             for i in range(0, n_repeats):
                 cv = BalancedGroupKFold(n_splits=5, slop_allowed=0.5, random_state=_RANDOM_STATE + i)
-                search = GridSearchCV(c3c, param_grid=param_dist, cv=cv, scoring=score_names, refit=False, return_train_score=True)
+                search = GridSearchCV(c3c, param_grid=param_dist, cv=cv, scoring=scoring, refit=False, return_train_score=True)
                 search.fit(X_INT_ID, y, groups=g)
                 yield search
         else:
             raise ValueError("Invalid search_type. Got '{}'".format(search_type))
 
-    searches = list(_run())
+    search_list = list(_run())
 
-    tag = "{}_{}_{}".format(tag, n_repeats, search_type)
-    save_repeated_hp_searches(searches, tag, score_names)
+    return search_list
 
 if __name__ == "__main__":
     pass
