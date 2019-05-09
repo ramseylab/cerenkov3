@@ -18,3 +18,5 @@ __obsolete__
 *.Rhistory
 *.EntrezGene
 *.log
+*.pickle
+locus_sampling
