@@ -1,0 +1,1 @@
+This folder stores all output files of machine learning experiments.
