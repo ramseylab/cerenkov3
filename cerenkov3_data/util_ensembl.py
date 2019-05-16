@@ -10,7 +10,7 @@ _ensembl_entrez_map.rename(columns={"Ensembl_Gene_ID": "_Ensembl_Gene_ID",
                                     "Entrez_Gene_ID": "_Entrez_Gene_ID"}, inplace=True)
 
 def get_mapped_Ensembl_IDs():
-    return set(_ensembl_entrez_map.Ensembl_Gene_ID)
+    return set(_ensembl_entrez_map._Ensembl_Gene_ID)
 
 def map_Ensembl_IDs_to_Entrez(df, ensembl_colname, new_colname, keep_unmapped=False):
     """
