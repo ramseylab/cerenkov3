@@ -1,11 +1,11 @@
 import pandas as pd
 from xgboost import XGBClassifier
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, cross_validate
 from cerenkov3_classifier.cerenkov3_classifier import Cerenkov3Classifier
 from cerenkov3_classifier.node2vec_manager import N2vManager
 from cerenkov3_classifier.extra_feat_manager import ExtraFeatManager
 from cerenkov3_classifier.network_manager import SgnManager
-from locus_sampling.cross_validation import BalancedGroupKFold
+from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, cross_validate
+from locus_sampling.cross_validation import BalancedGroupKFold, FixedReplicatedKFold
 
 _RANDOM_STATE = 1337
 
@@ -84,7 +84,7 @@ def x_validate(sgn_weight_dist, n2v_param_dist, clf_param_dist, scoring, n_repea
 
     return result_dict_list
 
-def random_hp_search(sgn_weight_dist, n2v_param_dist, clf_param_dist, scoring, n_iter_search=None, n_repeats=1, n_splits=5, fixed_cv=False)
+def random_hp_search(sgn_weight_dist, n2v_param_dist, clf_param_dist, scoring, n_iter_search=None, n_repeats=1, n_splits=5, fixed_cv=False):
     X_INT_ID, y, g, c3c, partition_table = prepare_for_experiment(fixed_cv=fixed_cv)
 
     param_dist = {**sgn_weight_dist, **n2v_param_dist, **clf_param_dist}
