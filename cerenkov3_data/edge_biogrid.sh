@@ -31,6 +31,6 @@ else
     mv ${FILENAME} ${DIRECTORY}
 fi
 
-# python3 edge_biogrid.py
+python3 edge_biogrid.py
 
 echo "[BioGRID] done!"
