@@ -24,9 +24,8 @@ if __name__ == "__main__":
     # class_balance = len(y) / sum(y) - 1  # n_negative / n_positive
     rare_event_rate = sum(y) / len(y)
 
-    cv = BalancedGroupKFold(n_splits=5, slop_allowed=0.5, random_state=_RANDOM_STATE)
-
-    xgb_clf = XGBClassifier(verbosity=0, objective='binary:logistic', booster='gbtree', n_jobs=-1, max_delta_step=0, scale_pos_weight=1, base_score=rare_event_rate, random_state=_RANDOM_STATE)
+    xgb_clf = XGBClassifier(verbosity=0, objective='binary:logistic', booster='gbtree', n_jobs=-1, max_delta_step=0, scale_pos_weight=1, 
+                            base_score=rare_event_rate, random_state=_RANDOM_STATE)
 
     scoring = {'AUPRC': 'average_precision', 
                'AUROC': 'roc_auc', 
@@ -60,7 +59,7 @@ if __name__ == "__main__":
     def _run():
         for i in range(0, n_repeats):
             repli_colname = "replication{}".format(i+1)
-            cv = FixedReplicatedKFold(n_splits=5, partition_table=partition_table, repli_colname=repli_colname)
+            cv = FixedReplicatedKFold(n_splits=n_splits, partition_table=partition_table, repli_colname=repli_colname)
             result_dict = cross_validate(estimator=xgb_clf, X=X, y=y, groups=g, scoring=scoring, cv=cv, return_train_score=True)
             yield result_dict
 
