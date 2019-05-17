@@ -58,7 +58,12 @@ def get_param_dist():
 
 
 if __name__ == "__main__":
-    X_INT_ID, y, g, partition_table, c3c = prepare_for_experiment(fixed_cv=True)
+    snp_feat_path = "./cerenkov3_data/vertex/SNP/osu18_cerenkov_feat_mat_plus_group_size.tsv"
+    snp_id_path = "./cerenkov3_classifier/INT_ID_EDGELIST/SNP_INT_ID.tsv"
+    snp_group_path = "./cerenkov3_data/vertex/SNP/osu18_groups.tsv"
+    partition_table_path = "./cerenkov3_data/vertex/SNP/osu18_replications_fold_assignments.tsv"
+
+    X_INT_ID, y, g, c3c, partition_table = prepare_for_experiment(snp_feat_path, snp_id_path, snp_group_path, partition_table_path)
 
     param_dist = get_param_dist()
     
@@ -83,5 +88,5 @@ if __name__ == "__main__":
     search_list = list(_run())
 
     output_dir = "./experiment_result"
-    output_tag = "c3_hyperparamter_search_xx"
+    output_tag = "c3_hyperparamter_search"
     save_hp_search(search_list, output_dir, output_tag, score_names=score_names, train_score=True, n_splits=n_splits, compact=False)
