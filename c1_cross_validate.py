@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
 from sklearn.model_selection import cross_validate
-from locus_sampling.cross_validation import BalancedGroupKFold, FixedReplicatedKFold
+from locus_sampling.cross_validation import FixedReplicatedKFold
 from locus_sampling.scoring import avg_rank_scorer2
 from util_report import save_x_validate
 
@@ -26,11 +26,6 @@ if __name__ == "__main__":
 
     xgb_clf = XGBClassifier(verbosity=0, objective='binary:logistic', booster='gbtree', n_jobs=-1, max_delta_step=0, scale_pos_weight=1, 
                             base_score=rare_event_rate, random_state=_RANDOM_STATE)
-
-    scoring = {'AUPRC': 'average_precision', 
-               'AUROC': 'roc_auc', 
-               'AVGRANK': avg_rank_scorer2(groups=g)}
-    score_names = scoring.keys()
     
     """
     g_xgb_hp_grid <- g_make_hyperparameter_grid_list(list(eta=c(0.1),
@@ -51,8 +46,14 @@ if __name__ == "__main__":
                       subsample=1)
     xgb_clf = xgb_clf.set_params(**param_dist)
 
+    scoring = {'AUPRC': 'average_precision', 
+               'AUROC': 'roc_auc', 
+               'AVGRANK': avg_rank_scorer2(groups=g)}
+    score_names = scoring.keys()
+
     n_repeats = 10
     n_splits = 5
+    
     partition_table = pd.read_csv("./cerenkov3_data/vertex/SNP/osu18_replications_fold_assignments.tsv", sep="\t")
     partition_table = Xyg.loc[:, ["name"]].merge(partition_table, how="inner", on="name")  # align partition_table to X
 
@@ -72,5 +73,5 @@ if __name__ == "__main__":
     result_dict_list = list(_run())
 
     output_dir = "./experiment_result"
-    output_tag = "c1_cross_validate_fixedKFold"
+    output_tag = "c1_cross_validate"
     save_x_validate(result_dict_list, output_dir, output_tag, score_names=score_names, train_score=True)
