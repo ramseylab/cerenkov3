@@ -72,7 +72,7 @@ if __name__ == "__main__":
                'AVGRANK': avg_rank_scorer2(groups=g)}
     score_names = scoring.keys()
 
-    n_iter_search = 2
+    n_iter_search = 240
     n_repeats = 1
     n_splits = 5
 
