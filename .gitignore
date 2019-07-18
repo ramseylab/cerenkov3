@@ -20,3 +20,4 @@ __obsolete__
 *.log
 *.pickle
 locus_sampling
+figures
