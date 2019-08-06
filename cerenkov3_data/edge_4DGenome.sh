@@ -15,7 +15,7 @@ Rscript edge_4DGenome_preprocess.R
 # Run bedtools intersect
 
 snp_dir="./vertex/SNP"
-snp_fn="osu18_SNP.bed"  ## Modify this filename if you have your own SNP bed file 
+snp_fn="osu19_SNP.bed"  ## Modify this filename if you have your own SNP bed file 
 gene_dir="./vertex/gene"
 tss_fn="Ensembl_TSS.bed"
 prm_fn="Ensembl_promoter.bed"

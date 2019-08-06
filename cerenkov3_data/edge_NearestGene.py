@@ -43,7 +43,7 @@ def convert_to_df(closest_obj):
 
 if __name__ == "__main__":
     snp_dir = get_path("vertex/SNP")
-    snp_fn = "osu18_SNP.bed"
+    snp_fn = "osu19_SNP.bed"
     snp_start_bed = make_snp_start_BED(os.path.join(snp_dir, snp_fn))
 
     gene_dir = get_path("vertex/gene")

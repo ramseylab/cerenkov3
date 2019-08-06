@@ -94,7 +94,7 @@ def convert_to_map(snp_tfbs_matrix, map_colnames):
 
 def get_rsid_list():
     snp_dir = get_path("vertex/SNP")
-    snp_fn = "osu18_SNP.bed"
+    snp_fn = "osu19_SNP.bed"
     rsid_list = pd.read_csv(os.path.join(snp_dir, snp_fn), sep="\t", header=None, usecols=[3], 
                             names=["name"], squeeze=True).tolist()
     

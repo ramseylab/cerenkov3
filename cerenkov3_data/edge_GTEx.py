@@ -37,7 +37,7 @@ def gen_snp_egene_map(snp_df, eqtl_dir, eqtl_suffix):
 
 if __name__ == "__main__":
     snp_dir = get_path("vertex/SNP")
-    snp_fn = "osu18_SNP.bed"
+    snp_fn = "osu19_SNP.bed"
     snp_df = read_snp_df(os.path.join(snp_dir, snp_fn))
 
     res_dir = get_path("resource/GTEx")
