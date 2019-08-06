@@ -9,6 +9,8 @@ __pycache__/
 
 # Project-specific
 __obsolete__
+locus_sampling
+figures
 *.txt
 *.tsv
 *.tsv#
@@ -19,4 +21,3 @@ __obsolete__
 *.EntrezGene
 *.log
 *.pickle
-locus_sampling
