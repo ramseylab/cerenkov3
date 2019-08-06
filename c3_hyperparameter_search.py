@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
 from sklearn.model_selection import RandomizedSearchCV
-from locus_sampling.cross_validation import BalancedGroupKFold, FixedReplicatedKFold
+from locus_sampling.cross_validation import BalancedGroupKFold
 from locus_sampling.scoring import avg_rank_scorer2
 from util_report import save_hp_search
 from c3_experiment_skeletion import prepare_for_experiment, _RANDOM_STATE
@@ -58,7 +58,11 @@ def get_param_dist():
 
 
 if __name__ == "__main__":
-    X_INT_ID, y, g, partition_table, c3c = prepare_for_experiment(fixed_cv=True)
+    snp_feat_path = "./cerenkov3_data/vertex/SNP/osu19_cerenkov_feat_mat_plus_group_size.tsv"
+    snp_id_path = "./cerenkov3_classifier/INT_ID_EDGELIST/SNP_INT_ID.tsv"
+    snp_group_path = "./cerenkov3_data/vertex/SNP/osu19_groups.tsv"
+
+    X_INT_ID, y, g, c3c = prepare_for_experiment(snp_feat_path, snp_id_path, snp_group_path)
 
     param_dist = get_param_dist()
     
@@ -67,14 +71,13 @@ if __name__ == "__main__":
                'AVGRANK': avg_rank_scorer2(groups=g)}
     score_names = scoring.keys()
 
-    n_iter_search = 2
+    n_iter_search = 240
     n_repeats = 1
     n_splits = 5
 
     def _run():
         for i in range(0, n_repeats):
-            repli_colname = "replication{}".format(i+1)
-            cv = FixedReplicatedKFold(n_splits=n_splits, partition_table=partition_table, repli_colname=repli_colname)
+            cv = BalancedGroupKFold(n_splits=n_splits, slop_allowed=0.5, random_state=_RANDOM_STATE + i)
             search = RandomizedSearchCV(c3c, param_distributions=param_dist,
                                         n_iter=n_iter_search, cv=cv, scoring=scoring, random_state=_RANDOM_STATE, refit=False, return_train_score=True)
             search.fit(X_INT_ID, y, groups=g)
@@ -83,5 +86,5 @@ if __name__ == "__main__":
     search_list = list(_run())
 
     output_dir = "./experiment_result"
-    output_tag = "c3_hyperparamter_search_xx"
+    output_tag = "c3_hyperparamter_search"
     save_hp_search(search_list, output_dir, output_tag, score_names=score_names, train_score=True, n_splits=n_splits, compact=False)

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import cross_validate
-from locus_sampling.cross_validation import BalancedGroupKFold, FixedReplicatedKFold
+from locus_sampling.cross_validation import FixedReplicatedKFold
 from locus_sampling.scoring import avg_rank_scorer2
 from util_report import save_x_validate
 from c3_experiment_skeletion import prepare_for_experiment, _RANDOM_STATE
@@ -38,7 +38,12 @@ def get_param_dist():
 
 
 if __name__ == "__main__":
-    X_INT_ID, y, g, c3c, partition_table = prepare_for_experiment(fixed_cv=True)
+    snp_feat_path = "./cerenkov3_data/vertex/SNP/osu19_cerenkov_feat_mat_plus_group_size.tsv"
+    snp_id_path = "./cerenkov3_classifier/INT_ID_EDGELIST/SNP_INT_ID.tsv"
+    snp_group_path = "./cerenkov3_data/vertex/SNP/osu19_groups.tsv"
+    partition_table_path = "./cerenkov3_data/vertex/SNP/osu18_replications_fold_assignments_wo_chr5_30.tsv"
+
+    X_INT_ID, y, g, c3c, partition_table = prepare_for_experiment(snp_feat_path, snp_id_path, snp_group_path, partition_table_path)
 
     param_dist = get_param_dist()
     c3c = c3c.set_params(**param_dist)
@@ -56,6 +61,12 @@ if __name__ == "__main__":
             cv = FixedReplicatedKFold(n_splits=n_splits, partition_table=partition_table, repli_colname="replication{}".format(i+1))
             result_dict = cross_validate(estimator=c3c, X=X_INT_ID, y=y, groups=g, scoring=scoring, cv=cv, return_train_score=True)
             yield result_dict
+
+    # def _run():
+    #     for i in range(0, n_repeats):
+    #         cv = BalancedGroupKFold(n_splits=n_splits, slop_allowed=0.5, random_state=_RANDOM_STATE + i)
+    #         result_dict = cross_validate(estimator=c3c, X=X_INT_ID, y=y, groups=g, scoring=scoring, cv=cv, return_train_score=True)
+    #         yield result_dict
         
     result_dict_list = list(_run())
 
